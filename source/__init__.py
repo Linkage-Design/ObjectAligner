@@ -8,7 +8,7 @@
 #       This file contains the code needed for the Object Aligner Blender
 #       Add-On
 #
-#   AUTHOR
+#   AUTHOR(S)
 #       Josh Kirkpatrick
 #       Jayme Wilkinson
 #
@@ -17,7 +17,7 @@
 #
 ################################################################################
 #
-#   Copyright (C) 2025 Linkage Design
+#   Copyright (C) 2024 Linkage Design
 #
 #   The software and information contained herein are proprietary to, and
 #   comprise valuable trade secrets of Linkage Design, whom intends
@@ -33,12 +33,6 @@ import mathutils
 ################################################################################
 #
 #   class OBJECT_OT_align_bounding_box(bpy.types.Operator):
-#
-################################################################################
-#
-#   DESCRIPTION
-#       Align selected object's bounding box or origin to the world coordinate
-#       system.
 #
 ################################################################################
 class OBJECT_OT_align_bounding_box(bpy.types.Operator):
@@ -144,7 +138,7 @@ class VIEW3D_PT_align_bounding_box_panel(bpy.types.Panel):
             This method is called by Blender to draw the panel for this tool
 
         ARGUMENTS
-            None
+            context     (in)    The current context from Blender
 
         RETURN
             None
@@ -153,7 +147,7 @@ class VIEW3D_PT_align_bounding_box_panel(bpy.types.Panel):
         #   Create a layout for the panel
         layout = self.layout
 
-        #   Draw the panel for this tool in the layout
+        #   Draw the elements of our panel in the layout
         row = layout.row(align=True)
         row.label(text="X:")
         row.prop(context.window_manager.operator_properties_last("OBJECT_OT_align_bounding_box"), "alignment_mode_x", expand=True)
@@ -163,7 +157,6 @@ class VIEW3D_PT_align_bounding_box_panel(bpy.types.Panel):
         row = layout.row(align=True)
         row.label(text="Z:")
         row.prop(context.window_manager.operator_properties_last("OBJECT_OT_align_bounding_box"), "alignment_mode_z", expand=True)
-
         row = layout.row()
         row.scale_y = 3.0
         row.operator("object.align_bounding_box", text="Align")
@@ -171,7 +164,7 @@ class VIEW3D_PT_align_bounding_box_panel(bpy.types.Panel):
 
 ###############################################################################
 #
-#   Funtions to register and unregister the classes of this Add-on
+#   Funtions and data to register and unregister the classes of this Add-on
 #
 ###############################################################################
 classes = [ OBJECT_OT_align_bounding_box,
@@ -195,14 +188,16 @@ def register():
 def unregister():
     '''
     DESCRIPTION
-        This method is used to unregister modules associated with this
-        Add-On. We unregister in reverse order to avoid dependency issues
+        This method is used by Blender ot unregister the components we
+        registered in this Add-On's register method.
+
+        Note: We unregister in reverse order to avoid dependency issues
 
     ARGUMENTS
         None
 
     RETURN
-        NONE
+        None
     '''
     for cls in classes:
         bpy.utils.unregister_class(cls)
