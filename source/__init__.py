@@ -30,11 +30,6 @@ import bpy
 import mathutils
 
 
-classes = [ OBJECT_OT_align_bounding_box,
-            VIEW3D_PT_align_bounding_box_panel ]
-
-
-
 ################################################################################
 #
 #   class OBJECT_OT_align_bounding_box(bpy.types.Operator):
@@ -96,6 +91,12 @@ class OBJECT_OT_align_bounding_box(bpy.types.Operator):
         '''
         DESCRIPTION
             Do the allignment of the selected objects
+
+        ARGUMENTS
+            context     (in)    The context the tool is called under
+
+        RETURN
+            {'FINISHED'}
         '''
         obj = context.object
 
@@ -114,6 +115,8 @@ class OBJECT_OT_align_bounding_box(bpy.types.Operator):
 
         # Set the object's new location to the calculated target location
         obj.location = target_location
+
+        #   Return the function status back to Blenders
 
         return {'FINISHED'}
 
@@ -166,11 +169,18 @@ class VIEW3D_PT_align_bounding_box_panel(bpy.types.Panel):
         row.operator("object.align_bounding_box", text="Align")
 
 
+###############################################################################
+#
+#   Funtions to register and unregister the classes of this Add-on
+#
+###############################################################################
+classes = [ OBJECT_OT_align_bounding_box,
+            VIEW3D_PT_align_bounding_box_panel ]
 
 def register():
     '''
     DESCRIPTION
-        This method is used by Blender to registers the components of this
+        This method is used by Blender to register the components of this
         Add-On.
 
     ARGUMENTS
@@ -185,7 +195,7 @@ def register():
 def unregister():
     '''
     DESCRIPTION
-        This method is used ot unregister modules associated with this
+        This method is used to unregister modules associated with this
         Add-On. We unregister in reverse order to avoid dependency issues
 
     ARGUMENTS
