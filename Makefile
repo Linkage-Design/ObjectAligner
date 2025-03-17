@@ -128,7 +128,7 @@ default: BANNER
 	@$(call COPY,$(LICENSE_FILE),$(BUILD_LOCATION))
 	@$(foreach FILE,$(SOURCE_FILES),											\
 		$(call COPY,$(FILE),$(BUILD_LOCATION));									)
-	$(call BUILD_MANIFEST,$(BUILD_LOCATION)/$(BL_MANIFEST_FILE))
+	@$(call BUILD_MANIFEST,$(BUILD_LOCATION)/$(BL_MANIFEST_FILE))
 	@$(call LABEL,"Finished Default Target...")
 
 
@@ -177,6 +177,7 @@ BANNER:
 	@$(call INFO,Time,"$(TIME)")
 	@$(call INFO)
 	@$(call LINE)
+
 
 info: BANNER
 	@$(call INFO)
