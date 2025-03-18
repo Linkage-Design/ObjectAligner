@@ -11,7 +11,7 @@
 #       Jayme Wilkinson
 #
 #   CREATED
-#       Feb 17, 2025 Initial Version
+#       Feb 17, 2025
 #
 ################################################################################
 #
@@ -54,7 +54,7 @@ BUILD_FILES		 	= $(wildcard $(BUILD_LOCATION)/*)
 SOURCE_FILES        = $(wildcard $(SOURCE_LOCATION)/*)
 
 #  Define the VPATH
-VPATH               = $(BUILD_LOCATION) $(SOURCE_LOCATION) $(DIST_LOCATION)
+VPATH				= $(BUILD_LOCATION) $(SOURCE_LOCATION) $(DIST_LOCATION)
 
 
 ################################################################################
