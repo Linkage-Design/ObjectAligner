@@ -39,8 +39,8 @@ LICENSE_FILE	= LICENSE
 BLENDER_VERSION     = 4.3
 BL_MANIFEST_FILE    = blender_manifest.toml
 BL_SCHEMA_VERSION   = "1.0.0"
-BL_ID				= "$(PROJECT)"
-BL_NAME				= "$(strip $(shell echo $(PROJECT) | sed 's/[A-Z]/ &/g'))"
+BL_ID				= "$(firstword $(COMPANY))$(PROJECT)"
+BL_NAME				= "$(firstword $(COMPANY)) $(strip $(shell echo $(PROJECT) | sed 's/[A-Z]/ &/g'))"
 BL_VERSION			= $(shell echo $(VERSION) | tr -d [a-z][A-Z])
 BL_TAGLINE			= "Align an object bounding box or orgin to world coordinates"
 BL_MAINTAINER		= "$(COMPANY) $(CONTACT)"
@@ -73,7 +73,7 @@ VERSION 		= $(strip 														\
 			  		      v0.0.0												\
 					  )															\
 				  )
-PACKAGE_FILE    = $(PROJECT)-$(VERSION).zip
+PACKAGE_FILE    = $(firstword $(COMPANY))$(PROJECT)-$(VERSION).zip
 
 #  Define the Locations of the Source, Build, and Distribution Files
 SOURCE_LOCATION = source
