@@ -35,6 +35,36 @@ COMPANY			= Linkage Design
 CONTACT			= <acheck@linkage-d.com>
 LICENSE_FILE	= LICENSE
 
+#	Blender Manifest Definitions
+BLENDER_VERSION     = 4.3
+BL_MANIFEST_FILE    = blender_manifest.toml
+BL_SCHEMA_VERSION   = "1.0.0"
+BL_ID				= "$(PROJECT)"
+BL_NAME				= "$(strip $(shell echo $(PROJECT) | sed 's/[A-Z]/ &/g'))"
+BL_VERSION			= $(shell echo $(VERSION) | tr -d [a-z][A-Z])
+BL_TAGLINE			= "Align an object bounding box or orgin to world coordinates"
+BL_MAINTAINER		= "$(COMPANY) $(CONTACT)"
+BL_TYPE				= "add-on"
+BL_TAGS				= ["Object"]
+BL_VERSION_MIN		= "4.2.0"
+BL_LICENSE			= ["SPDX:GPL-3.0-or-later"]
+BL_WEBSITE			= "https://blendermarket.com/products/linkage-object-aligner"
+BL_COPYRIGHT		= ["2024 $(COMPANY)"]
+
+
+################################################################################
+#
+#								N O T I C E
+#
+################################################################################
+#
+#		There are no configurable build options below this section.
+#		Any customizable variables that define how this project is built
+#		packaged, or how the manifest is created are defined above this
+#		line. Modifiing any of the information below might break the makefile.
+#
+################################################################################
+
 #  Detirmine the Version of this Project
 BRANCH          = $(lastword $(subst /, ,$(shell git branch --show-current)))
 VERSION 		= $(strip 														\
@@ -58,65 +88,6 @@ ICON_FILES		= $(wildcard $(ICON_LOCATION)/*)
 #  Define the VPATH
 VPATH           = $(BUILD_LOCATION) $(SOURCE_LOCATION) $(DIST_LOCATION)
 
-#	Blender Manifest Definitions
-BLENDER_VERSION     = 4.3
-BL_MANIFEST_FILE    = blender_manifest.toml
-BL_SCHEMA_VERSION   = "1.0.0"
-BL_ID				= "$(PROJECT)"
-BL_NAME				= "$(strip $(shell echo $(PROJECT) | sed 's/[A-Z]/ &/g'))"
-BL_VERSION			= $(shell echo $(VERSION) | tr -d [a-z][A-Z])
-BL_TAGLINE			= "Align an object bounding box or orgin to world coordinates"
-BL_MAINTAINER		= "$(COMPANY) <acheck@linkage-d.com>"
-BL_TYPE				= "add-on"
-BL_TAGS				= ["Object"]
-BL_VERSION_MIN		= "4.2.0"
-BL_LICENSE			= ["SPDX:GPL-3.0-or-later"]
-BL_WEBSITE			= "https://blendermarket.com/products/linkage-object-aligner"
-BL_COPYRIGHT		= ["2024 $(COMPANY)"]
-
-
-################################################################################
-#
-#								N O T I C E
-#
-################################################################################
-#
-#		There are no configurable build options below this section.
-#		Any customizable variables that define how this project is built
-#		packaged, or how the manifest is created are defined above this
-#		line. Modifiing any of the information below might break the makefile.
-#
-################################################################################
-
-################################################################################
-#
-#	Blender Functions Definitions
-#
-################################################################################
-BLENDER_BUILD	 = $(call INFO,"Building Add-On",$(1)) 							\
-				   blender --command extension build --verbose					\
-				    --source-dir $(BUILD_LOCATION) 								\
-					--output-filepath $(1);
-BLENDER_INSTALL  = blender --command extension install-file 					\
-					-r user_default $(1);
-BLENDER_MANIFEST = $(call INFO,"Creating",$(1))									\
-				   printf 'schema_version = $(BL_SCHEMA_VERSION)\n' > $(1);		\
-				   printf 'id = $(BL_ID)\n' >> $(1);	                       	\
-				   printf 'version = "$(BL_VERSION)"\n' >> $(1);				\
-				   printf 'name = $(BL_NAME)\n' >> $(1);						\
-				   printf 'maintainer = $(BL_MAINTAINER)\n' >> $(1);			\
-				   printf 'tagline = $(BL_TAGLINE)\n' >> $(1);					\
-				   printf 'type = $(BL_TYPE)\n' >> $(1);						\
-				   printf 'tags = $(BL_TAGS)\n' >> $(1);						\
-				   printf 'blender_version_min = $(BL_VERSION_MIN)\n' >> $(1);	\
-				   printf 'license = $(BL_LICENSE)\n' >> $(1);					\
-				   printf 'website = $(BL_WEBSITE)\n' >> $(1);					\
-				   printf 'copyright = $(BL_COPYRIGHT)\n' >> $(1);
-BLENDER_REMOVE   = $(call INFO,"Removing Add-on",$(1))							\
-                   blender --command extension remove $(1);
-BLENDER_VALIDATE = $(call INFO,"Validating Add-On",$(1))						\
-				   blender --command extension validate $(1);
-
 
 ################################################################################
 #
@@ -136,10 +107,13 @@ DELETE  = if test -e $(1); then                                         		\
 			  $(call INFO,"Removing",$(1))   					        		\
 			  rm -fr $(1);                                              		\
 		  fi
-INFO 	= printf '\e[33;1m%20s\e[0m %s\n' $(1) $(2);
-LABEL 	= printf "\e[36;1m*\e[33m%19s\e[37;1m %s\e[0m\n" $(1) $(2);
-LINE    = printf "\e[36;1m%0.s*\e[0m" {0..80};	printf "\n";
-LIST    = printf "\e[33;1m%20s\e[0m" $(1);										\
+EDGE    = $(if $(filter 0,$(words $(1))),										\
+			   printf "\e[36;1m%0.s*\e[0m" {0..80};	printf "\n";,				\
+			   printf "\e[36;1m*\e[33m%19s\e[37m %s\e[0m\n" $(1) $(2);			\
+		   )
+INFO 	= printf '\e[33m%20s\e[0m %s\n' $(1) $(2);
+LABEL   = printf "\e[35m%s$(1)\e[0m\n";
+LIST    = printf "\e[33m%20s\e[0m" $(1);										\
 		  $(foreach ITEM, $(2), 												\
 			  printf " %s\n%20s" $(ITEM);										\
 		   )																	\
@@ -148,27 +122,54 @@ LIST    = printf "\e[33;1m%20s\e[0m" $(1);										\
 
 ################################################################################
 #
+#	Blender Functions Definitions
+#
+################################################################################
+BLENDER_BUILD	 = blender --command extension build --verbose					\
+				       --source-dir $(BUILD_LOCATION) 							\
+					--output-filepath $(1);
+BLENDER_INSTALL  = blender --command extension install-file -e					\
+					-r user_default $(1);
+BLENDER_MANIFEST = printf 'schema_version = $(BL_SCHEMA_VERSION)\n' > $(1);		\
+				   printf 'id = $(BL_ID)\n' >> $(1);	                       	\
+				   printf 'version = "$(BL_VERSION)"\n' >> $(1);				\
+				   printf 'name = $(BL_NAME)\n' >> $(1);						\
+				   printf 'maintainer = $(BL_MAINTAINER)\n' >> $(1);			\
+				   printf 'tagline = $(BL_TAGLINE)\n' >> $(1);					\
+				   printf 'type = $(BL_TYPE)\n' >> $(1);						\
+				   printf 'tags = $(BL_TAGS)\n' >> $(1);						\
+				   printf 'blender_version_min = $(BL_VERSION_MIN)\n' >> $(1);	\
+				   printf 'license = $(BL_LICENSE)\n' >> $(1);					\
+				   printf 'website = $(BL_WEBSITE)\n' >> $(1);					\
+				   printf 'copyright = $(BL_COPYRIGHT)\n' >> $(1);
+BLENDER_REMOVE   = blender --command extension remove $(1);
+BLENDER_VALIDATE = blender --command extension validate $(1);
+
+
+################################################################################
+#
 #	Build Targets
 #
 ################################################################################
 default: BANNER
+	@$(call LABEL,Building $(PROJECT))
 	@$(call CHKDIR,$(BUILD_LOCATION))
 	@$(call COPY,$(LICENSE_FILE),$(BUILD_LOCATION))
 	@$(foreach FILE,$(SOURCE_FILES),											\
 		$(call COPY,$(FILE),$(BUILD_LOCATION));									)
 	@$(call BLENDER_MANIFEST,$(BUILD_LOCATION)/$(BL_MANIFEST_FILE))
-	@$(call DONE)
+	@$(call BLANK)
 
 dist: BANNER
+	@$(call LABEL,Creating $(PACKAGE_FILE))
 	@$(call CHKDIR,$(DIST_LOCATION))
 	@$(call BLENDER_BUILD,$(DIST_LOCATION)/$(PACKAGE_FILE))
-	@$(call BLENDER_VALIDATE,$(DIST_LOCATION)/$(PACKAGE_FILE))
-	@$(call DONE)
+	@$(call BLANK)
 
 check: BANNER
-	@$(call INFO,"Validating Blender Add-on: $(PACKAGE_FILE)")
+	@$(call LABEL,Validating $(PACKAGE_FILE))
 	@$(call BLENDER_VALIDATE,$(DIST_LOCATION)/$(PACKAGE_FILE))
-	@$(call DONE)
+	@$(call BLANK)
 
 
 ################################################################################
@@ -177,14 +178,16 @@ check: BANNER
 #
 ################################################################################
 clean: BANNER
+	@$(call LABEL,Cleaning $(PROJECT))
 	@$(foreach ITEM, $(shell ls -A $(BUILD_LOCATION)),							\
 		$(call DELETE,$(BUILD_LOCATION)/$(ITEM));								)
-	@$(call DONE)
+	@$(call BLANK)
 
 clobber: BANNER
+	@$(call LABEL,Clobber $(PROJECT))
 	@$(call DELETE,$(BUILD_LOCATION))
 	@$(call DELETE,$(DIST_LOCATION))
-	@$(call DONE)
+	@$(call BLANK)
 
 
 ################################################################################
@@ -193,12 +196,14 @@ clobber: BANNER
 #
 ################################################################################
 inst: BANNER
+	@$(call LABEL,Installing $(PACKAGE_FILE))
 	@$(call BLENDER_INSTALL,$(DIST_LOCATION)/$(PACKAGE_FILE))
-	@$(call DONE)
+	@$(call BLANK)
 
 uninst: BANNER
+	@$(call LABEL,Removing $(PACKAGE_FILE))
 	@$(call BLENDER_REMOVE,$(PROJECT))
-	@$(call DONE)
+	@$(call BLANK)
 
 
 ###############################################################################
@@ -206,9 +211,10 @@ uninst: BANNER
 #  	Test Targets
 #
 ################################################################################
-test: BANNER default dist inst
-	@$(call INFO,"Launching Blender...")
+test: BANNER default dist check inst
+	@$(call LABEL,Launching Blender...)
 	@blender
+	@$(call BLANK)
 
 
 ################################################################################
@@ -217,19 +223,21 @@ test: BANNER default dist inst
 #
 ################################################################################
 BANNER:
-	@$(call LINE)
-	@$(call LABEL)
-	@$(call LABEL,Project,$(PROJECT))
-	@$(call LABEL,Platform,$(PLATFORM))
-	@$(call LABEL)
-	@$(call LABEL,Version,$(VERSION))
-	@$(call LABEL)
-	@$(call LABEL,Date,"$(DATE)")
-	@$(call LABEL,Time,"$(TIME)")
-	@$(call LABEL)
-	@$(call LINE)
+	@$(call EDGE)
+	@$(call EDGE,"")
+	@$(call EDGE,Project,$(PROJECT))
+	@$(call EDGE,Platform,$(PLATFORM))
+	@$(call EDGE,"")
+	@$(call EDGE,Version,$(VERSION))
+	@$(call EDGE,"")
+	@$(call EDGE,Date,"$(DATE)")
+	@$(call EDGE,Time,"$(TIME)")
+	@$(call EDGE,"")
+	@$(call EDGE)
+	@$(call BLANK)
 
 BLENDER_INFO:
+	@$(call LABEL,Blender Manifest Data)
 	@$(call BLANK)
 	@$(call INFO,BLENDER_VERSION,$(BLENDER_VERSION))
 	@$(call INFO,BL_MANIFEST_FILE,$(BL_MANIFEST_FILE))
@@ -246,10 +254,14 @@ BLENDER_INFO:
 	@$(call INFO,BL_WEBSITE,$(BL_WEBSITE))
 	@$(call INFO,BL_COPYRIGHT,$(BL_COPYRIGHT))
 	@$(call BLANK)
-	@$(call LINE)
-
-info: BANNER BLENDER_INFO
+	@$(call LABEL,Blender Repo List)
 	@$(call BLANK)
+	@blender --command extension repo-list
+	@$(call BLANK)
+
+
+info: BANNER
+	@$(call LABEL,Common Makefile Values)
 	@$(call LIST,"SOURCE_FILES",$(SOURCE_FILES))
 	@$(call BLANK)
 	@$(call INFO,DIST_LOCATION,$(DIST_LOCATION))
@@ -258,3 +270,4 @@ info: BANNER BLENDER_INFO
 	@$(call BLANK)
 	@$(call LIST,"VPATH",$(VPATH))
 	@$(call BLANK)
+	@MAKE BLENDER_INFO
