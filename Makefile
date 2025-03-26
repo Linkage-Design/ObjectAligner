@@ -127,10 +127,11 @@ LIST    = printf "\e[33m%20s\e[0m" $(1);										\
 ################################################################################
 BLENDER_BUILD	 = blender --command extension build --verbose					\
 				       --source-dir $(BUILD_LOCATION) 							\
-					--output-filepath $(1);
+				       --output-filepath $(1);
 BLENDER_INSTALL  = blender --command extension install-file -e					\
-					-r user_default $(1);
-BLENDER_MANIFEST = printf 'schema_version = $(BL_SCHEMA_VERSION)\n' > $(1);		\
+				       -r user_default $(1);
+BLENDER_MANIFEST = $(call INFO,"Creating Manifest",$(1))						\
+				   printf 'schema_version = $(BL_SCHEMA_VERSION)\n' > $(1);		\
 				   printf 'id = $(BL_ID)\n' >> $(1);	                       	\
 				   printf 'version = "$(BL_VERSION)"\n' >> $(1);				\
 				   printf 'name = $(BL_NAME)\n' >> $(1);						\
