@@ -26,8 +26,10 @@
 #   otherwise made available to any other person or organization.
 #
 ################################################################################
-import bpy
-import mathutils
+import  bpy
+import  mathutils
+
+from    . import prefs
 
 
 ################################################################################
@@ -39,16 +41,21 @@ class OBJECT_OT_align_bounding_box(bpy.types.Operator):
     bl_idname  = "object.align_bounding_box"
     bl_label   = "Align Bounding Box"
     bl_options = {'REGISTER', 'UNDO'}
+
     item_list  = [ ('NONE',     "None",     "Do not align along this axis"),
                    ('MIN',      "Min",      "Align using the bounding box minimum"),
                    ('MAX',      "Max",      "Align using the bounding box maximum"),
                    ('CENTER',   "Center",   "Align using the bounding box center"),
                    ('ORIGIN',   "Origin",   "Align using the object's origin") ]
 
-    include_children: bpy.props.BoolProperty(name="Include Children", default=True) # type: ignore
-    alignment_mode_x: bpy.props.EnumProperty(name="X Alignment", items=item_list, default='MIN')  # type: ignore
-    alignment_mode_y: bpy.props.EnumProperty(name="Y Alignment", items=item_list, default='CENTER')  # type: ignore
-    alignment_mode_z: bpy.props.EnumProperty(name="Z Alignment", items=item_list, default='MIN')  # type: ignore
+    include_children: bpy.props.BoolProperty(name="Include Children",
+                                             default=True)
+    alignment_mode_x: bpy.props.EnumProperty(name="X Alignment",
+                                             items=item_list, default='MIN')
+    alignment_mode_y: bpy.props.EnumProperty(name="Y Alignment",
+                                             items=item_list, default='CENTER')
+    alignment_mode_z: bpy.props.EnumProperty(name="Z Alignment",
+                                             items=item_list, default='MIN')
 
     def invoke(self, context, event):
         '''
@@ -115,16 +122,6 @@ class OBJECT_OT_align_bounding_box(bpy.types.Operator):
         return {'FINISHED'}
 
 
-################################################################################
-#
-#   class VIEW3D_PT_align_bounding_box_panel(bpy.types.Panel):
-#
-################################################################################
-#
-#   DESCRIPTION
-#       UI Panel for the Bounding Box Aligner in the 3D View.
-#
-################################################################################
 class VIEW3D_PT_align_bounding_box_panel(bpy.types.Panel):
     bl_label        = "Linkage Object Aligner"
     bl_idname       = "VIEW3D_PT_align_bounding_box_panel"
@@ -164,12 +161,18 @@ class VIEW3D_PT_align_bounding_box_panel(bpy.types.Panel):
 
 ###############################################################################
 #
-#   Funtions and data to register and unregister the classes of this Add-on
+#   A list of classes to register with Blender Add-On system
 #
 ###############################################################################
-classes = [ OBJECT_OT_align_bounding_box,
-            VIEW3D_PT_align_bounding_box_panel ]
+classList = ( OBJECT_OT_align_bounding_box,
+              VIEW3D_PT_align_bounding_box_panel,
+              prefs.ObjectAlignerPreferences )
 
+###############################################################################
+#
+#   Registartion / Unregistartion functions.
+#
+###############################################################################
 def register():
     '''
     DESCRIPTION
@@ -182,16 +185,14 @@ def register():
     RETURN
         None
     '''
-    for cls in classes:
+    for cls in classList:
         bpy.utils.register_class(cls)
 
 def unregister():
     '''
     DESCRIPTION
-        This method is used by Blender ot unregister the components we
+        This method is used by Blender to unregister the classes we
         registered in this Add-On's register method.
-
-        Note: We unregister in reverse order to avoid dependency issues
 
     ARGUMENTS
         None
@@ -199,8 +200,9 @@ def unregister():
     RETURN
         None
     '''
-    for cls in classes:
+    for cls in classList:
         bpy.utils.unregister_class(cls)
+
 
 ###############################################################################
 #
