@@ -36,7 +36,7 @@ from   . import utils
 URL_LIST = [
     ("Report Issues", "github.com/Linkage-Design/ObjectAligner/issues"),
     ("Linkage Design", "linkage-d.com/tools-training"),
-    ("Blender Marketplace", "blendermarket.com/products/linkage-object-aligner"),
+    ("Superhive", "superhivemarket.com/products/linkage-object-aligner"),
     ("Gumroad", "linkagedesign.gumroad.com/l/objectaligner"),
     ("Instagram", "instagram.com/LinkageDesign"),
     ("YouTube", "youtube.com/c/LinkageDesign")

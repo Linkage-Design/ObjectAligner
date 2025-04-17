@@ -248,7 +248,7 @@ uninst: BANNER
 #  	Test Targets
 #
 ################################################################################
-test: BANNER default dist check inst
+test: BANNER clean default dist check inst
 	@$(call LABEL,"Launching Blender...")
 	@blender
 	@$(call BLANK)
